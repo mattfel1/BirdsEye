@@ -33,6 +33,8 @@ def sample_lines():
 	 	img[457,n] = (0,255,0)
 	 	print n
 
+#calculate where the cone of vision has a vertex (your location)
+#  and draw lines on the image to help visualize this
 def find_vertex(M,imgx):
 	#initialize boundary points
 	points = np.matrix([[0,   0    , 800, 800],
@@ -57,15 +59,17 @@ def find_vertex(M,imgx):
 	yint = (m1*xint+b1)
 	cv2.line(imgx, (int(newpoints[0,0]),int(newpoints[1,0])) , (int(xint),int(yint)) , (0,0,255),1)
 	cv2.line(imgx, (int(newpoints[0,2]),int(newpoints[1,2])) , (int(xint),int(yint)) , (0,0,255),1)
-	print xint, yint
+	return xint, yint
 
 
 
 
 
-
+#set filename and read it into an opencv object
 img_location = 'course.jpeg'
 img = cv2.imread(img_location)
+
+#if the following gives an error, you are probably screwing up the filename
 rows,cols,ch = img.shape
 print rows, cols, ch
 
@@ -80,6 +84,8 @@ cv2.setMouseCallback('image',get_point)
 orig = np.float32([[556,481],[509,457],[783,481],[669,457]])
 #assuming square is 227px big
 guess = np.float32([[556,481],[556,254],[783,481],[783,254]])
+#scale and move image around so that your location is 400,800 and 
+#  you are sufficiently zoomed out
 new = tune_output_square(.4,[-160,170],guess)
 
 #calculate transform matrix
@@ -88,8 +94,9 @@ M = cv2.getPerspectiveTransform(orig,new)
 #remap original image by applying transform matrix
 imgx = cv2.warpPerspective(img,M,(800,800))
 
-#figure out if the vertex is in the right location
-find_vertex(M,imgx)
+#figure out if the vertex is in the right location and draw helpful lines
+xint, yint = find_vertex(M,imgx)
+print xint, yint
 
 #write image
 cv2.imwrite('xformed.png',imgx)
