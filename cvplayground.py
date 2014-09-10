@@ -92,13 +92,13 @@ new = tune_output_square(.4,[-160,170],guess)
 M = cv2.getPerspectiveTransform(orig,new)
 
 #remap original image by applying transform matrix
-imgx = cv2.warpPerspective(img,M,(800,800))
+imgx = cv2.warpPerspective(img,M,(800,800), flags = 1, borderMode = 0, borderValue = (255,0,0))
 
 #figure out if the vertex is in the right location and draw helpful lines
 xint, yint = find_vertex(M,imgx)
 print xint, yint
 
-#write image
+#write imageb
 cv2.imwrite('xformed.png',imgx)
 
 while(1):
